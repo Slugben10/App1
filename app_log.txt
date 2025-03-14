@@ -1,0 +1,128 @@
+Application path determined as: /Users/binobenjamin/Documents/research-assistant
+Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/Documents
+Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/.env
+.env file loaded
+Successfully imported python-docx
+Successfully imported pypdf
+Application starting. Errors will be logged to /Users/binobenjamin/Documents/research-assistant/error_log.txt
+Initializing Research Assistant App (wxPython version)
+Loading config from: /Users/binobenjamin/Documents/research-assistant/config.json
+Config loaded successfully
+Setting up wxPython UI components
+wxPython UI setup complete
+Updating document list
+Found 0 documents
+Document list updated successfully
+App initialization complete
+Sending user message: Mennyi 3 + 4?...
+Loading content for 0 selected documents
+Getting LLM client for model: OpenAI GPT-4
+Sending request to OpenAI API with model gpt-4
+Received successful response from OpenAI API
+Selected file to upload: /Users/binobenjamin/Downloads/Manuscript_2025-03-07-v02.docx
+Document uploaded successfully: Manuscript_2025-03-07-v02.docx
+Updating document list
+Found 1 documents
+Document list updated successfully
+Selected documents updated: Manuscript_2025-03-07-v02.docx
+Selected file to upload: /Users/binobenjamin/Downloads/Bicarbonate in microbes-Virulence-2025.pdf
+Document uploaded successfully: Bicarbonate in microbes-Virulence-2025.pdf
+Updating document list
+Found 2 documents
+Document list updated successfully
+Selected documents updated: Bicarbonate in microbes-Virulence-2025.pdf
+Selected documents updated: Manuscript_2025-03-07-v02.docx, Bicarbonate in microbes-Virulence-2025.pdf
+Sending user message: I want to write a research paper. You can already ...
+Loading content for 2 selected documents
+Loading document: /Users/binobenjamin/Documents/research-assistant/Documents/Manuscript_2025-03-07-v02.docx
+Loading document: /Users/binobenjamin/Documents/research-assistant/Documents/Bicarbonate in microbes-Virulence-2025.pdf
+Getting LLM client for model: OpenAI GPT-4
+Sending request to OpenAI API with model gpt-4
+OpenAI API Error: 429 - {
+    "error": {
+        "message": "Request too large for gpt-4 in organization org-rE3IXRFNSnWXf7MLwZl0RDsx on tokens per min (TPM): Limit 10000, Requested 23906. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.",
+        "type": "tokens",
+        "param": null,
+        "code": "rate_limit_exceeded"
+    }
+}
+
+Application path determined as: /Users/binobenjamin/Documents/research-assistant
+Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/Documents
+Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/.env
+.env file loaded
+Successfully imported python-docx
+Successfully imported pypdf
+Application starting. Errors will be logged to /Users/binobenjamin/Documents/research-assistant/error_log.txt
+Initializing Research Assistant App (wxPython version)
+Loading config from: /Users/binobenjamin/Documents/research-assistant/config.json
+Config loaded successfully
+Setting up wxPython UI components
+wxPython UI setup complete
+Updating document list
+Found 2 documents
+Document list updated successfully
+App initialization complete
+Selected documents updated: Manuscript_2025-03-07-v02.docx
+Selected documents updated: Manuscript_2025-03-07-v02.docx, Bicarbonate in microbes-Virulence-2025.pdf
+Sending user message: I want to write a research paper. You can already ...
+Loading content for 2 selected documents
+Loading document: /Users/binobenjamin/Documents/research-assistant/Documents/Manuscript_2025-03-07-v02.docx
+Loading document: /Users/binobenjamin/Documents/research-assistant/Documents/Bicarbonate in microbes-Virulence-2025.pdf
+Getting LLM client for model: OpenAI GPT-4
+Sending request to OpenAI API with model gpt-4
+OpenAI API Error: 429 - {
+    "error": {
+        "message": "Request too large for gpt-4 in organization org-rE3IXRFNSnWXf7MLwZl0RDsx on tokens per min (TPM): Limit 10000, Requested 23894. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.",
+        "type": "tokens",
+        "param": null,
+        "code": "rate_limit_exceeded"
+    }
+}
+
+Selected documents updated: Manuscript_2025-03-07-v02.docx
+Sending user message: Összegezd a doksi tartalmát...
+Loading content for 1 selected documents
+Getting LLM client for model: OpenAI GPT-4
+Sending request to OpenAI API with model gpt-4
+Received successful response from OpenAI API
+Application path determined as: /Users/binobenjamin/Documents/research-assistant
+Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/Documents
+Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/.env
+.env file loaded
+Successfully imported python-docx
+Successfully imported pypdf
+Application starting. Errors will be logged to /Users/binobenjamin/Documents/research-assistant/error_log.txt
+Initializing Research Assistant App (wxPython version)
+Loading config from: /Users/binobenjamin/Documents/research-assistant/config.json
+Config loaded successfully
+Setting up wxPython UI components
+wxPython UI setup complete
+Updating document list
+Found 2 documents
+Document list updated successfully
+App initialization complete
+Selected documents updated: Manuscript_2025-03-07-v02.docx
+Selected documents updated: Manuscript_2025-03-07-v02.docx, Bicarbonate in microbes-Virulence-2025.pdf
+Sending user message: I want to write a research paper. You can already ...
+Loading content for 2 selected documents
+Loading document: /Users/binobenjamin/Documents/research-assistant/Documents/Manuscript_2025-03-07-v02.docx
+Loading document: /Users/binobenjamin/Documents/research-assistant/Documents/Bicarbonate in microbes-Virulence-2025.pdf
+Getting LLM client for model: OpenAI GPT-4o-mini
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API
+Sending user message: I want to write a research paper. You can already ...
+Loading content for 2 selected documents
+Getting LLM client for model: OpenAI GPT-4o-mini
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API
+Sending user message: The discussion part has to be about 2000 words (ab...
+Loading content for 2 selected documents
+Getting LLM client for model: OpenAI GPT-4o-mini
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API
+Sending user message: Now generate me the whole version, including abstr...
+Loading content for 2 selected documents
+Getting LLM client for model: OpenAI GPT-4o-mini
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API

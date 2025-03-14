@@ -1,0 +1,27 @@
+Uncaught exception: KeyboardInterrupt: 
+  File "/Users/binobenjamin/Documents/research-assistant/main.py", line 497, in <module>
+    root.mainloop()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/tkinter/__init__.py", line 1429, in mainloop
+    self.tk.mainloop(n)
+
+Application starting at /Users/binobenjamin/Documents/research-assistant/main.py
+OpenAI API Error: 429 - {
+    "error": {
+        "message": "Request too large for gpt-4 in organization org-rE3IXRFNSnWXf7MLwZl0RDsx on tokens per min (TPM): Limit 10000, Requested 23906. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.",
+        "type": "tokens",
+        "param": null,
+        "code": "rate_limit_exceeded"
+    }
+}
+
+Application starting at /Users/binobenjamin/Documents/research-assistant/main.py
+OpenAI API Error: 429 - {
+    "error": {
+        "message": "Request too large for gpt-4 in organization org-rE3IXRFNSnWXf7MLwZl0RDsx on tokens per min (TPM): Limit 10000, Requested 23894. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.",
+        "type": "tokens",
+        "param": null,
+        "code": "rate_limit_exceeded"
+    }
+}
+
+Application starting at /Users/binobenjamin/Documents/research-assistant/main.py

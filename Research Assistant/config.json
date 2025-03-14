@@ -1,0 +1,31 @@
+{
+    "models": {
+        "openai": {
+            "name": "OpenAI GPT-4",
+            "api_key_env": "OPENAI_API_KEY"
+        },
+        "anthropic": {
+            "name": "Anthropic Claude",
+            "api_key_env": "ANTHROPIC_API_KEY"
+        },
+        "llama": {
+            "name": "Meta LLaMA",
+            "model_path": "models/llama"
+        },
+        "gemini": {
+            "name": "Google Gemini",
+            "api_key_env": "GOOGLE_API_KEY"
+        },
+        "qwen": {
+            "name": "Qwen",
+            "api_key_env": "QWEN_API_KEY"
+        },
+        "deepseek": {
+            "name": "DeepSeek",
+            "api_key_env": "DEEPSEEK_API_KEY"
+        }
+    },
+    "default_model": "openai",
+    "max_tokens": 8000,
+    "system_prompt": "You are a helpful AI research assistant. Your goal is to help researchers write new papers or expand work-in-progress papers based on the provided documents and instructions."
+}

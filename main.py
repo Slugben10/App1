@@ -8,7 +8,12 @@ import shutil
 import requests
 import sys
 import traceback
+import wx
 
+# Override IsDisplayAvailable to always return True
+wx.PyApp.IsDisplayAvailable = lambda _: True
+
+# A további kód változatlan marad
 # Custom event for updating UI from threads
 ResponseEvent, EVT_RESPONSE = wx.lib.newevent.NewEvent()
 

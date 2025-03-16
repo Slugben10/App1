@@ -98,7 +98,7 @@
 		</data>
 		<key>Resources/base_library.zip</key>
 		<data>
-		tzIZEIUokAp2q0k1nX7oKs6tT1o=
+		M4l8BsH0GM2s7U/wcfLL8AoBMIY=
 		</data>
 		<key>Resources/certifi/cacert.pem</key>
 		<data>
@@ -110,7 +110,7 @@
 		</data>
 		<key>Resources/config.json</key>
 		<data>
-		uw4kKME5BK6AlU8ieWzJr7JSDj8=
+		NwXd7zJj+X9xEKsT3hUUDU1Ffcw=
 		</data>
 		<key>Resources/docx/py.typed</key>
 		<data>
@@ -8256,6 +8256,34 @@
 		<data>
 		tjx1WJ1xnyi7Wbbsq4Btm1dwHak=
 		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/INSTALLER</key>
+		<data>
+		16AxQdXWseiLa1nvCLZoHfISxZk=
+		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/LICENSE</key>
+		<data>
+		BEXtD2mRDuruA28Jo5oTxuHzfhI=
+		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/METADATA</key>
+		<data>
+		In9lwOMQmL7lm4K84jlcLwEJkGA=
+		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/RECORD</key>
+		<data>
+		kK1P4lPLf5MKBYcn/YqnGiyycDg=
+		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/WHEEL</key>
+		<data>
+		Xai7YO4qkVl83Pwz9pukCTOkQxQ=
+		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/entry_points.txt</key>
+		<data>
+		CpJImuFaB9v+HO++aBIdzb2xUsM=
+		</data>
+		<key>Resources/setuptools-75.9.1.dist-info/top_level.txt</key>
+		<data>
+		rvLLzMapqPQ+ThUOf88dewPw4kk=
+		</data>
 		<key>Resources/setuptools/_vendor/jaraco/text/Lorem ipsum.txt</key>
 		<data>
 		eDY2ciZNnNP3LVwdNmXhZXsaUHE=
@@ -9362,15 +9390,6 @@
 			<key>symlink</key>
 			<string>../../Resources/matplotlib/mpl-data</string>
 		</dict>
-		<key>Frameworks/numpy/_core/_multiarray_tests.cpython-39-darwin.so</key>
-		<dict>
-			<key>cdhash</key>
-			<data>
-			hRnrURUlHUBSlW1HZFXqXj/gfjc=
-			</data>
-			<key>requirement</key>
-			<string>cdhash H"8519eb5115251d4052956d476455ea5e3fe07e37"</string>
-		</dict>
 		<key>Frameworks/numpy/_core/_multiarray_umath.cpython-39-darwin.so</key>
 		<dict>
 			<key>cdhash</key>
@@ -9397,6 +9416,15 @@
 			</data>
 			<key>requirement</key>
 			<string>cdhash H"2d75711b47f00d06586b7fac39eff26b289e62ea"</string>
+		</dict>
+		<key>Frameworks/numpy/linalg/lapack_lite.cpython-39-darwin.so</key>
+		<dict>
+			<key>cdhash</key>
+			<data>
+			BNI1/9SrhV3GRL+pXPp1jyJiBBw=
+			</data>
+			<key>requirement</key>
+			<string>cdhash H"04d235ffd4ab855dc644bfa95cfa758f2262041c"</string>
 		</dict>
 		<key>Frameworks/numpy/random/_bounded_integers.cpython-39-darwin.so</key>
 		<dict>
@@ -9488,6 +9516,11 @@
 		<dict>
 			<key>symlink</key>
 			<string>../Resources/setuptools</string>
+		</dict>
+		<key>Frameworks/setuptools-75.9.1.dist-info</key>
+		<dict>
+			<key>symlink</key>
+			<string>../Resources/setuptools-75.9.1.dist-info</string>
 		</dict>
 		<key>Frameworks/wx/_adv.cpython-39-darwin.so</key>
 		<dict>
@@ -9813,7 +9846,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			N3pV9RtMzNfERlbMbZLszWygIXtnSNu9QFzWywLRvck=
+			ZcQ4VrGtGnh09mdxmENTHE+0SdXLZPDcxbEcyQJi9MI=
 			</data>
 		</dict>
 		<key>Resources/certifi/cacert.pem</key>
@@ -9839,7 +9872,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			shr/v9Ck68X8v3ljRu5GadrMA9Hpz2ePihlcct2TW78=
+			4Cw2yja+3Mbkqo+r9mT08SVG6+NtDLMSaOvfGX01rlU=
 			</data>
 		</dict>
 		<key>Resources/contourpy</key>
@@ -24297,6 +24330,55 @@
 			<key>hash2</key>
 			<data>
 			cVrVbF9Pg5UJLFi2tvLetPkG+BOAkpqDa9hqslNjSHU=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/INSTALLER</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zuuue4knoyJ+UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/LICENSE</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			htoPAa6uRjSKPD1GUZXcHOzN55956HdppkuNoEsqR0E=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/METADATA</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			7QsuwY6w/9NFfLSrutqVgC2yt2fFesf+G6492B0VpYw=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/RECORD</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			8BvR33aAeTTIbcOsHmqoBaVMNA3k4lxYS/qkAhYG68E=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/WHEEL</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			EaM1zKIUYa7rQnxGiOCGhzJABRwy4WO57rWMR3/tj4I=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/entry_points.txt</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			zkgthpf/Fa9NVE9p6FKT3Xk9DR1faAcRU4coggsV7jA=
+			</data>
+		</dict>
+		<key>Resources/setuptools-75.9.1.dist-info/top_level.txt</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			d9yL39v/W7qmKDDSH6sT4bE0j/Ls1M3P161OGgdsm4g=
 			</data>
 		</dict>
 		<key>Resources/setuptools/_vendor/jaraco/text/Lorem ipsum.txt</key>

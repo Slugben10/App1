@@ -3,7 +3,7 @@
     "openai": {
       "name": "OpenAI GPT-4",
       "api_key_env": "OPENAI_API_KEY",
-      "model_name": "gpt-4"
+      "model_name": "gpt-4o-mini"
     },
     "anthropic": {
       "name": "Anthropic Claude",
@@ -17,6 +17,5 @@
     }
   },
   "default_model": "openai",
-  "max_tokens": 8000,
   "system_prompt": "You are a helpful AI research assistant. Your goal is to help researchers write new papers or expand work-in-progress papers based on the provided documents and instructions."
 }

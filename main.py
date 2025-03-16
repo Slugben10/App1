@@ -33,6 +33,9 @@ def log_message(message, is_error=False):
 def get_app_path():
     if getattr(sys, 'frozen', False):
         # Running as a compiled executable
+        if sys.platform == 'darwin' and hasattr(sys, '_MEIPASS'):
+            # Handle macOS .app bundle
+            return os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))
         return os.path.dirname(sys.executable)
     else:
         # Running as a script
@@ -47,6 +50,7 @@ log_message(f"Ensuring Documents directory exists at: {documents_dir}")
 os.makedirs(documents_dir, exist_ok=True)
 
 # Try to load dotenv if available
+# Try to load dotenv if available
 try:
     import dotenv
     # Look for .env in the application directory
@@ -56,7 +60,23 @@ try:
         dotenv.load_dotenv(env_path)
         log_message(".env file loaded")
     else:
-        log_message("No .env file found")
+        # Try alternative locations for macOS app bundle
+        if sys.platform == 'darwin' and getattr(sys, 'frozen', False):
+            alt_paths = [
+                os.path.join(os.path.dirname(sys.executable), ".env"),
+                os.path.join(os.path.dirname(os.path.dirname(sys.executable)), ".env"),
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(sys.executable))), ".env")
+            ]
+            for alt_path in alt_paths:
+                log_message(f"Checking alternative .env path: {alt_path}")
+                if os.path.exists(alt_path):
+                    dotenv.load_dotenv(alt_path)
+                    log_message(f".env file loaded from alternative path: {alt_path}")
+                    break
+            else:
+                log_message("No .env file found in any location")
+        else:
+            log_message("No .env file found")
 except ImportError:
     log_message("dotenv module not available, skipping environment loading", True)
 
@@ -89,7 +109,22 @@ def load_config():
                 log_message("Config loaded successfully")
                 return config
         else:
-            log_message(f"Config file not found at {config_path}, creating default", True)
+            # Try alternative locations for macOS app bundle
+            if sys.platform == 'darwin' and getattr(sys, 'frozen', False):
+                alt_paths = [
+                    os.path.join(os.path.dirname(sys.executable), "config.json"),
+                    os.path.join(os.path.dirname(os.path.dirname(sys.executable)), "config.json"),
+                    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(sys.executable))), "config.json")
+                ]
+                for alt_path in alt_paths:
+                    log_message(f"Checking alternative config path: {alt_path}")
+                    if os.path.exists(alt_path):
+                        with open(alt_path, "r", encoding='utf-8') as f:
+                            config = json.load(f)
+                            log_message(f"Config loaded successfully from alternative path: {alt_path}")
+                            return config
+            
+            log_message(f"Config file not found at {config_path} or alternative locations, creating default", True)
             return create_default_config(config_path)
     except Exception as e:
         log_message(f"Error loading config: {str(e)}", True)
@@ -554,6 +589,18 @@ class ResearchAssistantApp(wx.Frame):
             
             model_config = self.config["models"][model_key]
             model_id = model_config.get("model_name", "")
+            env_key = model_config.get("api_key_env", "")
+            
+            
+            log_message(f"Available environment variables: {', '.join([k for k in os.environ.keys()])}")
+            log_message(f"Checking for API key in environment variable: {env_key}")
+            
+            
+            if env_key and not os.environ.get(env_key):
+                error_msg = f"API key for {model_name} not found in environment variable {env_key}"
+                log_message(error_msg, True)
+                self.SetStatusText(error_msg)
+                return None
             
             if model_key == "openai":
                 return OpenAIClient(model_id)

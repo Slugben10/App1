@@ -59,7 +59,7 @@ if not os.path.exists("config.json"):
             "openai": {
                 "name": "OpenAI GPT-4",
                 "api_key_env": "OPENAI_API_KEY",
-                "model_name": "gpt-4"
+                "model_name": "gpt-4o-mini"
             },
             "anthropic": {
                 "name": "Anthropic Claude",
@@ -128,6 +128,32 @@ if getattr(sys, 'frozen', False):
     os.environ['RA_APP_PATH'] = APP_PATH
 """)
 
+# Create macOS specific hook for path detection
+macos_hook_path = os.path.join("hooks", "hook-macos-paths.py")
+with open(macos_hook_path, 'w') as f:
+    f.write("""
+# macOS specific path detection hook
+import os
+import sys
+
+# Add different possible paths for resources when in a macOS bundle
+if getattr(sys, 'frozen', False) and sys.platform == 'darwin':
+    # We're in a macOS app bundle
+    bundle_path = os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))
+    resources_path = os.path.join(bundle_path, 'Resources')
+    macos_path = os.path.join(bundle_path, 'MacOS')
+    
+    # Add these paths to sys.path to help with imports
+    sys.path.insert(0, bundle_path)
+    sys.path.insert(0, resources_path)
+    sys.path.insert(0, macos_path)
+    
+    # Set environment variables to help find resources
+    os.environ['RA_BUNDLE_PATH'] = bundle_path
+    os.environ['RA_RESOURCES_PATH'] = resources_path
+    os.environ['RA_MACOS_PATH'] = macos_path
+""")
+
 # Define data files to include
 data_files = [
     ("config.json", "."),
@@ -189,6 +215,7 @@ pyinstaller_args = [
 
 # Add runtime hooks
 pyinstaller_args.append('--runtime-hook=hooks/hook-app.py')
+pyinstaller_args.append('--runtime-hook=hooks/hook-macos-paths.py')
 
 # Add additional hooks directory
 pyinstaller_args.append('--additional-hooks-dir=hooks')
@@ -253,6 +280,33 @@ try:
         if os.path.exists(app_bundle_path):
             print(f"Performing additional macOS compatibility fixes for {app_bundle_path}...")
             
+            # Ensure config.json and .env are copied into the app bundle at multiple locations
+            contents_path = os.path.join(app_bundle_path, "Contents")
+            macos_path = os.path.join(contents_path, "MacOS")
+            resources_path = os.path.join(contents_path, "Resources")
+            
+            # Create directories if they don't exist
+            os.makedirs(macos_path, exist_ok=True)
+            os.makedirs(resources_path, exist_ok=True)
+            
+            # Create Documents directory in multiple locations
+            for dest_path in [macos_path, resources_path]:
+                doc_path = os.path.join(dest_path, "Documents")
+                os.makedirs(doc_path, exist_ok=True)
+                print(f"Created Documents directory at: {doc_path}")
+            
+            # Copy config.json to multiple locations
+            for dest_path in [macos_path, resources_path]:
+                if os.path.exists('config.json'):
+                    shutil.copy('config.json', dest_path)
+                    print(f"Copied config.json to {dest_path}")
+            
+            # Copy .env to multiple locations
+            if os.path.exists('.env'):
+                for dest_path in [macos_path, resources_path]:
+                    shutil.copy('.env', dest_path)
+                    print(f"Copied .env to {dest_path}")
+            
             # Create a fixup script to run after installation
             fixup_script = os.path.join(dist_dir, "fix_macos_app.sh")
             with open(fixup_script, 'w') as f:
@@ -266,6 +320,14 @@ echo "Fixing wxPython compatibility issues in: $APP_PATH"
 # Fix library paths if needed
 install_name_tool -change @loader_path/libwx_baseu-3.1.dylib @executable_path/libwx_baseu-3.1.dylib "$APP_PATH/wx/_core.so" 2>/dev/null || true
 install_name_tool -change @loader_path/libwx_osx_cocoau-3.1.dylib @executable_path/libwx_osx_cocoau-3.1.dylib "$APP_PATH/wx/_core.so" 2>/dev/null || true
+
+# Create symbolic links to ensure files can be found
+BUNDLE_DIR="$(dirname "$(dirname "$APP_PATH")")"
+echo "Creating symbolic links in bundle directory: $BUNDLE_DIR"
+
+# Link .env and config.json if they exist
+[ -f "$APP_PATH/.env" ] && ln -sf "$APP_PATH/.env" "$BUNDLE_DIR/.env" 2>/dev/null || true
+[ -f "$APP_PATH/config.json" ] && ln -sf "$APP_PATH/config.json" "$BUNDLE_DIR/config.json" 2>/dev/null || true
 
 echo "Fix completed. Try running the app again."
 """)
@@ -292,3 +354,5 @@ if sys.platform == 'darwin':
     print("1. Try running the fix_macos_app.sh script in the application directory")
     print("2. Ensure you're using a compatible version of wxPython for your macOS version")
     print("3. Consider using PyInstaller 4.10 or newer for better macOS compatibility")
+    print("4. If using the app bundle, try running it from the terminal with:")
+    print(f"   open -a {APP_NAME}")

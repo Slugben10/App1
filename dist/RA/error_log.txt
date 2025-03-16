@@ -1,2 +1,1 @@
 Application starting at /Users/binobenjamin/Documents/research-assistant/dist/RA/RA
-Application starting at /Users/binobenjamin/Documents/research-assistant/dist/RA/RA

@@ -1,26 +1,39 @@
-Application path determined as: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS
-Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/Documents
-Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
-No .env file found
+Application path determined as: /Users/binobenjamin/Documents/research-assistant/dist/RA.app
+Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents
+Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/.env
+Checking alternative .env path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
+.env file loaded from alternative path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
 Successfully imported python-docx
 Successfully imported pypdf
 Application starting. Errors will be logged to /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/error_log.txt
 Initializing Research Assistant App (wxPython version)
-Loading config from: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json
-Config file not found at /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json, creating default
-Default config saved to /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json
+Loading config from: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/config.json
+Checking alternative config path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json
+Config loaded successfully from alternative path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json
 Setting up wxPython UI components
 wxPython UI setup complete
 Updating document list
 Found 0 documents
 Document list updated successfully
 App initialization complete
-Sending user message: Mennyi 3+4...
+Sending user message: Mennyi 3+4?...
 Loading content for 0 selected documents
-Getting LLM client for model: OpenAI GPT-4
-Error initializing LLM client: OpenAI API key not found in environment variables
-Traceback (most recent call last):
-  File "main.py", line 559, in get_llm_client
-  File "main.py", line 194, in __init__
-ValueError: OpenAI API key not found in environment variables
-
+Getting LLM client for model: OpenAI GPT-4o-mini
+Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
+Checking for API key in environment variable: OPENAI_API_KEY
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API
+Selected file to upload: /Users/binobenjamin/Downloads/Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
+Document uploaded successfully: Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
+Updating document list
+Found 1 documents
+Document list updated successfully
+Selected documents updated: Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
+Sending user message: Foglald össze mi van a dokumentumban...
+Loading content for 1 selected documents
+Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
+Getting LLM client for model: OpenAI GPT-4o-mini
+Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
+Checking for API key in environment variable: OPENAI_API_KEY
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API

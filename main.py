@@ -321,38 +321,74 @@ class GoogleClient:
             log_message(error_msg, True)
             return error_msg
 
+# Dialog for editing a message
+class MessageEditDialog(wx.Dialog):
+    def __init__(self, parent, message):
+        super(MessageEditDialog, self).__init__(parent, title="Edit Message", size=(500, 300))
+        
+        self.message = message
+        
+        # Create a panel
+        panel = wx.Panel(self)
+        
+        # Create a sizer
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Add a text control for editing the message
+        self.text_ctrl = wx.TextCtrl(panel, value=message, style=wx.TE_MULTILINE)
+        sizer.Add(self.text_ctrl, 1, wx.ALL|wx.EXPAND, 10)
+        
+        # Add OK and Cancel buttons
+        button_sizer = wx.StdDialogButtonSizer()
+        ok_button = wx.Button(panel, wx.ID_OK)
+        ok_button.SetDefault()
+        button_sizer.AddButton(ok_button)
+        cancel_button = wx.Button(panel, wx.ID_CANCEL)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
+        sizer.Add(button_sizer, 0, wx.ALIGN_CENTER|wx.ALL, 10)
+        
+        panel.SetSizer(sizer)
+        
+        # Center the dialog
+        self.Centre()
+    
+    def GetMessage(self):
+        return self.text_ctrl.GetValue()
+
 # Main application class
 class ResearchAssistantApp(wx.Frame):
     def __init__(self):
         super(ResearchAssistantApp, self).__init__(None, title="Research Assistant", size=(1200, 800))
-        
+    
         log_message("Initializing Research Assistant App (wxPython version)")
-        
-        # Load configuration
+    
+    # Load configuration
         self.config = load_config()
-        
-        # Initialize data storage
+    
+    # Initialize data storage
         self.documents = {}  # Store loaded documents
         self.selected_docs = []  # Track selected documents
         self.conversation_history = []  # Store conversation history
         self.doc_checkboxes = []  # Track document checkboxes
-        
-        # Set up the UI
+        self.message_positions = []  # Store positions of messages in the chat display
+    
+    # Set up the UI
         self.setup_ui()
-        
-        # Update document list
+    
+    # Update document list
         self.update_document_list()
-        
-        # Set up event handler for response updates
+    
+    # Set up event handler for response updates
         self.Bind(EVT_RESPONSE, self.on_response_event)
-        
-        # Create status bar
+    
+    # Create status bar
         self.CreateStatusBar()
         self.SetStatusText("Ready")
-        
+    
         log_message("App initialization complete")
-        
-        # Center the window
+    
+    # Center the window
         self.Centre()
         self.Show()
     
@@ -429,6 +465,25 @@ class ResearchAssistantApp(wx.Frame):
             
             model_panel.SetSizer(model_sizer)
             right_sizer.Add(model_panel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+            
+            # Chat management buttons
+            chat_management_panel = wx.Panel(right_panel)
+            chat_management_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+            clear_all_btn = wx.Button(chat_management_panel, label="Clear All Chat")
+            clear_all_btn.Bind(wx.EVT_BUTTON, self.on_clear_all_chat)
+            chat_management_sizer.Add(clear_all_btn, 1, wx.RIGHT, 5)
+
+            clear_last_btn = wx.Button(chat_management_panel, label="Clear Last Exchange")
+            clear_last_btn.Bind(wx.EVT_BUTTON, self.on_clear_last_exchange)
+            chat_management_sizer.Add(clear_last_btn, 1, wx.RIGHT, 5)
+
+            edit_msg_btn = wx.Button(chat_management_panel, label="Edit Message")
+            edit_msg_btn.Bind(wx.EVT_BUTTON, self.on_edit_message)
+            chat_management_sizer.Add(edit_msg_btn, 1)
+
+            chat_management_panel.SetSizer(chat_management_sizer)
+            right_sizer.Add(chat_management_panel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
             
             # Chat display
             self.chat_display = wx.TextCtrl(right_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_SUNKEN)
@@ -622,49 +677,215 @@ class ResearchAssistantApp(wx.Frame):
     
     def append_to_chat(self, message, sender):
         try:
-            # Determine insert position (end of text)
+        # Determine insert position (end of text)
             end_pos = self.chat_display.GetLastPosition()
-            
-            # Insert sender with formatting
+        
+        # Insert sender with formatting
             self.chat_display.SetInsertionPoint(end_pos)
             self.chat_display.WriteText(f"{sender}: ")
-            
-            # Style the sender text
+        
+        # Style the sender text
             last_pos = self.chat_display.GetLastPosition()
             self.chat_display.SetStyle(end_pos, last_pos, 
-                                      wx.TextAttr(wx.BLACK, font=wx.Font(wx.FontInfo(10).Bold())))
-            
-            # Add message
+                                    wx.TextAttr(wx.BLACK, font=wx.Font(wx.FontInfo(10).Bold())))
+        
+        # Add message
             self.chat_display.WriteText(f"{message}\n\n")
-            
-            # Scroll to end
+        
+        # Scroll to end
             self.chat_display.ShowPosition(self.chat_display.GetLastPosition())
         except Exception as e:
             log_message(f"Error appending to chat: {str(e)}", True)
     
+    
+    
+    def on_clear_all_chat(self, event):
+        try:
+        # Confirm with user
+            dialog = wx.MessageDialog(self, 
+                                    "Are you sure you want to clear the entire chat history?",
+                                    "Confirm Clear All", 
+                                    wx.YES_NO | wx.ICON_QUESTION)
+        
+            if dialog.ShowModal() == wx.ID_YES:
+            # Clear conversation history
+                self.conversation_history = []
+            
+            # Clear chat display
+                self.chat_display.Clear()
+            
+            # Clear message positions
+                self.message_positions = []
+            
+                log_message("Chat history cleared")
+                self.SetStatusText("Chat history cleared")
+        
+            dialog.Destroy()
+        except Exception as e:
+            error_msg = f"Error clearing chat: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+
+    def on_clear_last_exchange(self, event):
+        try:
+            if len(self.conversation_history) >= 2:
+            # Remove last assistant and user messages (one exchange)
+                self.conversation_history = self.conversation_history[:-2]
+            
+            # Redraw chat display
+                self.chat_display.Clear()
+                self.message_positions = []
+            
+                for msg in self.conversation_history:
+                    sender = "You" if msg["role"] == "user" else "Assistant"
+                    self.append_to_chat(msg["content"], sender)
+            
+                log_message("Last exchange cleared")
+                self.SetStatusText("Last exchange cleared")
+            else:
+                self.SetStatusText("No complete exchanges to clear")
+        except Exception as e:
+            error_msg = f"Error clearing last exchange: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+
+    def on_edit_message(self, event):
+        try:
+        # First, store the current position of each message to enable selection
+            if not self.message_positions:
+            # If we haven't tracked positions yet, we need to rebuild this list
+                self.rebuild_message_positions()
+        
+        # Create a dialog to select which message to edit
+            messages = []
+            for i, msg in enumerate(self.conversation_history):
+                role = "You" if msg["role"] == "user" else "Assistant"
+            # Truncate message for display in selection dialog
+                content = msg["content"]
+                if len(content) > 50:
+                    content = content[:47] + "..."
+                messages.append(f"{i+1}. {role}: {content}")
+        
+        # Show message selection dialog
+            dialog = wx.SingleChoiceDialog(
+                self, "Select a message to edit:", "Edit Message", messages)
+        
+            if dialog.ShowModal() == wx.ID_OK:
+                selected_index = dialog.GetSelection()
+                dialog.Destroy()
+            
+            # Now show edit dialog for the selected message
+                edit_dialog = MessageEditDialog(
+                    self, self.conversation_history[selected_index]["content"])
+            
+                if edit_dialog.ShowModal() == wx.ID_OK:
+                # Update the message with edited content
+                    edited_content = edit_dialog.GetMessage()
+                    self.conversation_history[selected_index]["content"] = edited_content
+                
+                # Redraw chat display up to the edited message
+                    self.chat_display.Clear()
+                    self.message_positions = []
+                
+                # Display all messages up to and including the edited one
+                    for i, msg in enumerate(self.conversation_history[:selected_index+1]):
+                        sender = "You" if msg["role"] == "user" else "Assistant"
+                        self.append_to_chat(msg["content"], sender)
+                
+                # Remove all messages after the edited one
+                    self.conversation_history = self.conversation_history[:selected_index+1]
+                
+                # Disable input during processing
+                    self.user_input.Disable()
+                    self.SetStatusText("Processing edited message...")
+                
+                # Process the edited message - use the last message in the conversation history
+                # which is the edited message we just updated
+                    threading.Thread(target=self.process_message, args=(self.conversation_history[-1]["content"],), daemon=True).start()
+            
+                edit_dialog.Destroy()
+            else:
+                dialog.Destroy()
+        except Exception as e:
+            error_msg = f"Error editing message: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+        
+        
+    def rebuild_message_positions(self):
+        try:
+            self.message_positions = []
+            current_position = 0
+        
+        # Get the text of the chat display
+            text = self.chat_display.GetValue()
+            lines = text.split('\n')
+        
+        # Rebuild positions based on message markers in text
+            for i, line in enumerate(lines):
+            # Check if this line starts a message (contains "You: " or "Assistant: ")
+                if line.startswith("You: ") or line.startswith("Assistant: "):
+                # Calculate position in characters
+                    position = sum(len(lines[j]) + 1 for j in range(i))
+                    self.message_positions.append(position)
+        
+            log_message(f"Rebuilt message positions: {len(self.message_positions)} found")
+        except Exception as e:
+            log_message(f"Error rebuilding message positions: {str(e)}", True)
+            log_message(traceback.format_exc(), True)
+
+
+
+    def edit_conversation_history(self, event):
+        try:
+        # Create a dialog to edit conversation history
+            dialog = ConversationHistoryDialog(self, self.conversation_history)
+            if dialog.ShowModal() == wx.ID_OK:
+            # Update conversation history
+                self.conversation_history = dialog.get_updated_history()
+            
+            # Update chat display
+                self.chat_display.Clear()
+                for msg in self.conversation_history:
+                    sender = "You" if msg["role"] == "user" else "Assistant"
+                    self.append_to_chat(msg["content"], sender)
+            
+                log_message("Conversation history updated")
+                self.SetStatusText("Conversation history updated")
+        
+            dialog.Destroy()
+        except Exception as e:
+            error_msg = f"Error editing conversation history: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+        
     def on_send_message(self, event):
         try:
             user_message = self.user_input.GetValue().strip()
-            
+        
             if not user_message:
                 return
-            
+        
             log_message(f"Sending user message: {user_message[:50]}...")
-            
-            # Clear input
+        
+        # Clear input
             self.user_input.Clear()
-            
-            # Add to chat display
+        
+        # Add to chat display
             self.append_to_chat(user_message, "You")
-            
-            # Add to conversation history
+        
+        # Add to conversation history
             self.conversation_history.append({"role": "user", "content": user_message})
-            
-            # Disable input during processing
+        
+        # Disable input during processing
             self.user_input.Disable()
             self.SetStatusText("Processing...")
-            
-            # Use threading to keep UI responsive
+        
+        # Use threading to keep UI responsive
             threading.Thread(target=self.process_message, args=(user_message,), daemon=True).start()
         except Exception as e:
             error_msg = f"Error sending message: {str(e)}"
@@ -672,66 +893,208 @@ class ResearchAssistantApp(wx.Frame):
             log_message(traceback.format_exc(), True)
             self.SetStatusText(error_msg)
             self.user_input.Enable()
-    
+
     def process_message(self, user_message):
         try:
-            # Load selected documents
+        # Load selected documents
             doc_context = self.load_selected_documents()
-            
-            # Create conversation history text
+        
+        # Create conversation history text
             history_text = ""
             for msg in self.conversation_history[:-1]:  # Skip the last user message as we'll add it separately
                 sender = "User" if msg["role"] == "user" else "Assistant"
                 history_text += f"{sender}: {msg['content']}\n\n"
-            
-            # Get system prompt from config
+        
+        # Get system prompt from config
             system_prompt = self.config.get("system_prompt", "You are a helpful AI research assistant.")
-            
-            # Create the full prompt
+        
+        # Create the full prompt
             prompt = f"""
-{system_prompt}
+    {system_prompt}
 
-Document Context:
-{doc_context}
+    Document Context:
+    {doc_context}
 
-Conversation History:
-{history_text}
+    Conversation History:
+    {history_text}
 
-Current Question:
-{user_message}
-"""
-            
-            # Get LLM client
+    Current Question:
+    {user_message}
+    """
+        
+        # Get LLM client
             client = self.get_llm_client()
-            
+        
             if client:
                 response = client.generate_response(prompt)
             else:
                 response = "Could not initialize LLM client. Please check your API keys and configuration."
-            
-            # Add to conversation history
+        
+        # Add to conversation history
             self.conversation_history.append({"role": "assistant", "content": response})
-            
-            # Update UI in the main thread
+        
+        # Update UI in the main thread
             wx.PostEvent(self, ResponseEvent(response=response))
         except Exception as e:
             error_message = f"Error processing message: {str(e)}"
             log_message(error_message, True)
             log_message(traceback.format_exc(), True)
             wx.PostEvent(self, ResponseEvent(response=error_message))
-    
+
     def on_response_event(self, event):
         try:
-            # Add response to chat
+        # Add response to chat
             self.append_to_chat(event.response, "Assistant")
-            
-            # Enable input
+        
+        # Enable input
             self.user_input.Enable()
             self.SetStatusText("Ready")
         except Exception as e:
             log_message(f"Error updating UI with response: {str(e)}", True)
             self.SetStatusText(f"Error: {str(e)}")
             self.user_input.Enable()
+
+
+# Dialog for editing conversation history
+# Dialog for editing conversation history
+class ConversationHistoryDialog(wx.Dialog):
+    def __init__(self, parent, conversation_history):
+        super(ConversationHistoryDialog, self).__init__(
+            parent, title="Edit Conversation History", size=(800, 600)
+        )
+        
+        self.conversation_history = conversation_history.copy()
+        
+        # Create main sizer
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Instructions
+        instructions = wx.StaticText(self, label="Edit or delete conversation messages:")
+        main_sizer.Add(instructions, 0, wx.ALL, 10)
+        
+        # Create a scrolled panel for the messages
+        self.panel = scrolled.ScrolledPanel(self)
+        self.panel.SetAutoLayout(True)
+        self.panel.SetupScrolling()
+        
+        self.panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.message_editors = []
+        
+        # Add each message to the panel
+        for i, msg in enumerate(self.conversation_history):
+            self.add_message_editor(i, msg)
+        
+        self.panel.SetSizer(self.panel_sizer)
+        main_sizer.Add(self.panel, 1, wx.EXPAND | wx.ALL, 10)
+        
+        # Buttons
+        button_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        
+        ok_button = wx.Button(self, wx.ID_OK, "Save Changes")
+        cancel_button = wx.Button(self, wx.ID_CANCEL, "Cancel")
+        
+        button_sizer.Add(ok_button, 0, wx.ALL, 5)
+        button_sizer.Add(cancel_button, 0, wx.ALL, 5)
+        
+        main_sizer.Add(button_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
+        
+        self.SetSizer(main_sizer)
+        self.Centre()
+    
+    def add_message_editor(self, index, message):
+        # Create a panel for this message
+        msg_panel = wx.Panel(self.panel)
+        msg_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Role selection
+        role_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        role_label = wx.StaticText(msg_panel, label="Role:")
+        role_choices = ["user", "assistant"]
+        role_choice = wx.Choice(msg_panel, choices=["User", "Assistant"])
+        role_choice.SetSelection(0 if message["role"] == "user" else 1)
+        
+        role_sizer.Add(role_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 5)
+        role_sizer.Add(role_choice, 0)
+        
+        # Delete button
+        delete_btn = wx.Button(msg_panel, label="Delete")
+        delete_btn.index = index  # Store the index
+        delete_btn.Bind(wx.EVT_BUTTON, self.on_delete_message)
+        
+        role_sizer.Add(delete_btn, 0, wx.LEFT, 10)
+        
+        msg_sizer.Add(role_sizer, 0, wx.EXPAND | wx.ALL, 5)
+        
+        # Message content
+        content_label = wx.StaticText(msg_panel, label="Content:")
+        msg_sizer.Add(content_label, 0, wx.ALL, 5)
+        
+        content_text = wx.TextCtrl(msg_panel, value=message["content"], style=wx.TE_MULTILINE)
+        msg_sizer.Add(content_text, 0, wx.EXPAND | wx.ALL, 5)
+        
+        msg_panel.SetSizer(msg_sizer)
+        self.panel_sizer.Add(msg_panel, 0, wx.EXPAND | wx.ALL | wx.BOTTOM, 10)
+        
+        # Add separator line
+        line = wx.StaticLine(self.panel, style=wx.LI_HORIZONTAL)
+        self.panel_sizer.Add(line, 0, wx.EXPAND | wx.ALL, 5)
+        
+        # Store references to UI elements
+        self.message_editors.append({
+            "panel": msg_panel,
+            "role": role_choice,
+            "content": content_text,
+            "index": index
+        })
+    
+    def on_delete_message(self, event):
+        # Get the index from the button that triggered the event
+        index = event.GetEventObject().index
+        
+        # Find the corresponding editor
+        editor = None
+        for ed in self.message_editors:
+            if ed["index"] == index:
+                editor = ed
+                break
+        
+        if editor:
+            # Remove the panel and its separator line from the sizer
+            self.panel_sizer.Remove(editor["panel"])
+            editor["panel"].Destroy()
+            
+            # Get the index of the editor in the list
+            list_index = self.message_editors.index(editor)
+            
+            # If not the last item, remove the separator line
+            if list_index < len(self.message_editors) - 1:
+                # The separator line is right after the panel
+                next_item = self.panel_sizer.GetItem(list_index * 2 + 1).GetWindow()
+                if next_item:
+                    self.panel_sizer.Remove(next_item)
+                    next_item.Destroy()
+            
+            # Remove from our list
+            self.message_editors.remove(editor)
+            
+            # Update the UI
+            self.panel.Layout()
+            self.panel.SetupScrolling()
+    
+    def get_updated_history(self):
+        # Create a new history from the current state of editors
+        updated_history = []
+        
+        for editor in self.message_editors:
+            role = "user" if editor["role"].GetSelection() == 0 else "assistant"
+            content = editor["content"].GetValue()
+            
+            updated_history.append({
+                "role": role,
+                "content": content
+            })
+        
+        return updated_history
 
 # Set up basic error logging
 def setup_error_logging():

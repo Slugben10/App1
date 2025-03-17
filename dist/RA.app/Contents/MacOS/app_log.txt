@@ -23,13 +23,27 @@ Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH,
 Checking for API key in environment variable: OPENAI_API_KEY
 Sending request to OpenAI API with model gpt-4o-mini
 Received successful response from OpenAI API
+Rebuilt message positions: 2 found
+Loading content for 0 selected documents
+Getting LLM client for model: OpenAI GPT-4o-mini
+Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
+Checking for API key in environment variable: OPENAI_API_KEY
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API
+Rebuilt message positions: 2 found
+Loading content for 0 selected documents
+Getting LLM client for model: OpenAI GPT-4o-mini
+Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
+Checking for API key in environment variable: OPENAI_API_KEY
+Sending request to OpenAI API with model gpt-4o-mini
+Received successful response from OpenAI API
 Selected file to upload: /Users/binobenjamin/Downloads/Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
 Document uploaded successfully: Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
 Updating document list
 Found 1 documents
 Document list updated successfully
 Selected documents updated: Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
-Sending user message: Foglald össze mi van a dokumentumban...
+Sending user message: Foglald össze miről szól a doksi...
 Loading content for 1 selected documents
 Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/Blogpost_AI and Analytics in Banking_dubai conf_2025 febr_draft 1.pdf
 Getting LLM client for model: OpenAI GPT-4o-mini
@@ -37,3 +51,4 @@ Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH,
 Checking for API key in environment variable: OPENAI_API_KEY
 Sending request to OpenAI API with model gpt-4o-mini
 Received successful response from OpenAI API
+Last exchange cleared

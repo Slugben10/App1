@@ -1,1 +1,2 @@
 Application starting at /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/RA
+Application starting at /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/RA

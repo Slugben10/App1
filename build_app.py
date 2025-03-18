@@ -211,6 +211,7 @@ pyinstaller_args = [
     '--onedir',
     '--clean',
     '--noconfirm',
+    '--noconsole',  # Elrejtjük a konzolablakot
 ]
 
 # Add runtime hooks
@@ -247,6 +248,9 @@ elif sys.platform == 'win32':  # Windows
     
     # Add specific Windows options for wxPython
     pyinstaller_args.append('--hidden-import=wx.msw')
+    
+    # Windows-specifikus opciók az antivírus-jelzések elkerülésére
+    pyinstaller_args.append('--uac-admin')
     
     # Add icon if available
     if os.path.exists('app_icon.ico'):

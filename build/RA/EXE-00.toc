@@ -71,7 +71,7 @@
  [],
  False,
  False,
- 1742326146,
+ 1742915758,
  [('runw',
    '/Users/binobenjamin/Documents/research-assistant/.venv/lib/python3.9/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',
    'EXECUTABLE')],

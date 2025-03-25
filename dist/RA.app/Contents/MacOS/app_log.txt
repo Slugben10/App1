@@ -1,5 +1,6 @@
 Application path determined as: /Users/binobenjamin/Documents/research-assistant/dist/RA.app
 Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents
+Ensuring Prompts directory exists at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Prompts
 Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/.env
 Checking alternative .env path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
 .env file loaded from alternative path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
@@ -16,148 +17,8 @@ Updating document list
 Found 0 documents
 Document list updated successfully
 App initialization complete
-Sending user message: 5+5?...
+Sending user message: Mennyi 8-1?...
 Loading content for 0 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Application path determined as: /Users/binobenjamin/Documents/research-assistant/dist/RA.app
-Ensuring Documents directory exists at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents
-Checking for .env file at: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/.env
-Checking alternative .env path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
-.env file loaded from alternative path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/.env
-Successfully imported python-docx
-Successfully imported pypdf
-Application starting. Errors will be logged to /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/error_log.txt
-Initializing Research Assistant App (wxPython version)
-Loading config from: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/config.json
-Checking alternative config path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json
-Config loaded successfully from alternative path: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Contents/MacOS/config.json
-Setting up wxPython UI components
-wxPython UI setup complete
-Updating document list
-Found 0 documents
-Document list updated successfully
-App initialization complete
-Selected file to upload: /Users/binobenjamin/Downloads/nihms-1834890.pdf
-Document uploaded successfully: nihms-1834890.pdf
-Updating document list
-Found 1 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/fimmu-08-00184.pdf
-Document uploaded successfully: fimmu-08-00184.pdf
-Updating document list
-Found 2 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/Alkaline PH accelerates PMN apoptosis.pdf
-Document uploaded successfully: Alkaline PH accelerates PMN apoptosis.pdf
-Updating document list
-Found 3 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/Extracell. acidifacion on PMN.0137221.pdf
-Document uploaded successfully: Extracell. acidifacion on PMN.0137221.pdf
-Updating document list
-Found 4 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/acidification activates PMN.full.pdf
-Document uploaded successfully: acidification activates PMN.full.pdf
-Updating document list
-Found 5 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/J Immunol-2022.pdf
-Document uploaded successfully: J Immunol-2022.pdf
-Updating document list
-Found 6 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/Manuscript_2025-03-07-v02.docx
-Document uploaded successfully: Manuscript_2025-03-07-v02.docx
-Updating document list
-Found 7 documents
-Document list updated successfully
-Selected file to upload: /Users/binobenjamin/Downloads/Bicarbonate in microbes-Virulence-2025.pdf
-Document uploaded successfully: Bicarbonate in microbes-Virulence-2025.pdf
-Updating document list
-Found 8 documents
-Document list updated successfully
-Selected documents updated: J Immunol-2022.pdf
-Selected documents updated: Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Selected documents updated: acidification activates PMN.full.pdf, Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Selected documents updated: Bicarbonate in microbes-Virulence-2025.pdf, acidification activates PMN.full.pdf, Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Selected documents updated: Alkaline PH accelerates PMN apoptosis.pdf, Bicarbonate in microbes-Virulence-2025.pdf, acidification activates PMN.full.pdf, Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Selected documents updated: nihms-1834890.pdf, Alkaline PH accelerates PMN apoptosis.pdf, Bicarbonate in microbes-Virulence-2025.pdf, acidification activates PMN.full.pdf, Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Selected documents updated: Manuscript_2025-03-07-v02.docx, nihms-1834890.pdf, Alkaline PH accelerates PMN apoptosis.pdf, Bicarbonate in microbes-Virulence-2025.pdf, acidification activates PMN.full.pdf, Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Selected documents updated: fimmu-08-00184.pdf, Manuscript_2025-03-07-v02.docx, nihms-1834890.pdf, Alkaline PH accelerates PMN apoptosis.pdf, Bicarbonate in microbes-Virulence-2025.pdf, acidification activates PMN.full.pdf, Extracell. acidifacion on PMN.0137221.pdf, J Immunol-2022.pdf
-Sending user message: I want to write a research paper. You can already ...
-Loading content for 8 selected documents
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/fimmu-08-00184.pdf
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/Manuscript_2025-03-07-v02.docx
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/nihms-1834890.pdf
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/Alkaline PH accelerates PMN apoptosis.pdf
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/Bicarbonate in microbes-Virulence-2025.pdf
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/acidification activates PMN.full.pdf
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/Extracell. acidifacion on PMN.0137221.pdf
-Loading document: /Users/binobenjamin/Documents/research-assistant/dist/RA.app/Documents/J Immunol-2022.pdf
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Sending user message: The introduction has to be around 1000 words, so r...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Sending user message: The discussion part has to be around 2000 words so...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Sending user message: So now write me down the whole thing. With the cor...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Last exchange cleared
-Sending user message: So now write me down the whole corrected version w...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Chat history cleared
-Sending user message: I want to write a research paper. You can already ...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Chat history cleared
-Sending user message: I want to write a research paper. You can already ...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Sending user message: As I have said, the discussion part has to be 2000...
-Loading content for 8 selected documents
-Getting LLM client for model: OpenAI GPT-4o-mini
-Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
-Checking for API key in environment variable: OPENAI_API_KEY
-Sending request to OpenAI API with model gpt-4o-mini
-Received successful response from OpenAI API
-Sending user message: Write DOWN ONLY THE DISCUSSION PART!! IT HAS TO BE...
-Loading content for 8 selected documents
 Getting LLM client for model: OpenAI GPT-4o-mini
 Available environment variables: USER, COMMAND_MODE, __CFBundleIdentifier, PATH, LOGNAME, SSH_AUTH_SOCK, HOME, SHELL, TMPDIR, __CF_USER_TEXT_ENCODING, XPC_SERVICE_NAME, XPC_FLAGS, _PYI_ARCHIVE_FILE, _PYI_PARENT_PROCESS_LEVEL, RA_APP_PATH, RA_BUNDLE_PATH, RA_RESOURCES_PATH, RA_MACOS_PATH, MPLCONFIGDIR, OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, QWEN_API_KEY, DEEPSEEK_API_KEY, LLAMA_MODEL_PATH, MAX_TOKENS, DEFAULT_MODEL
 Checking for API key in environment variable: OPENAI_API_KEY

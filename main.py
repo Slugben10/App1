@@ -13,9 +13,9 @@ import wx
 # Override IsDisplayAvailable to always return True
 wx.PyApp.IsDisplayAvailable = lambda _: True
 
-# A további kód változatlan marad
 # Custom event for updating UI from threads
 ResponseEvent, EVT_RESPONSE = wx.lib.newevent.NewEvent()
+StreamEvent, EVT_STREAM = wx.lib.newevent.NewEvent()  # New event for streaming updates
 
 # Add detailed startup logging
 def log_message(message, is_error=False):
@@ -49,7 +49,11 @@ documents_dir = os.path.join(APP_PATH, "Documents")
 log_message(f"Ensuring Documents directory exists at: {documents_dir}")
 os.makedirs(documents_dir, exist_ok=True)
 
-# Try to load dotenv if available
+# Ensure the Prompts directory exists (new for prompt library)
+prompts_dir = os.path.join(APP_PATH, "Prompts")
+log_message(f"Ensuring Prompts directory exists at: {prompts_dir}")
+os.makedirs(prompts_dir, exist_ok=True)
+
 # Try to load dotenv if available
 try:
     import dotenv
@@ -143,7 +147,7 @@ def create_default_config(config_path=None):
             "anthropic": {
                 "name": "Anthropic Claude",
                 "api_key_env": "ANTHROPIC_API_KEY",
-                "model_name": "claude-3-opus-20240229"
+                "model_name": "claude-3-7-sonnet-20250219"
             },
             "gemini": {
                 "name": "Google Gemini",
@@ -228,7 +232,7 @@ class OpenAIClient:
         if not self.api_key:
             raise ValueError("OpenAI API key not found in environment variables")
     
-    def generate_response(self, prompt):
+    def generate_response(self, prompt, on_chunk=None):
         try:
             headers = {
                 "Content-Type": "application/json",
@@ -238,11 +242,13 @@ class OpenAIClient:
             data = {
                 "model": self.model_name,
                 "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.7
+                "temperature": 0.7,
+                "stream": False
             }
             
             log_message(f"Sending request to OpenAI API with model {self.model_name}")
             
+            # Regular response (disable streaming for now to fix crashes)
             response = requests.post(
                 "https://api.openai.com/v1/chat/completions",
                 headers=headers,
@@ -256,6 +262,7 @@ class OpenAIClient:
                 error_msg = f"OpenAI API Error: {response.status_code} - {response.text}"
                 log_message(error_msg, True)
                 return error_msg
+                
         except Exception as e:
             error_msg = f"OpenAI API Exception: {str(e)}"
             log_message(error_msg, True)
@@ -269,7 +276,7 @@ class AnthropicClient:
         if not self.api_key:
             raise ValueError("Anthropic API key not found in environment variables")
     
-    def generate_response(self, prompt):
+    def generate_response(self, prompt, on_chunk=None):
         try:
             headers = {
                 "Content-Type": "application/json",
@@ -280,11 +287,13 @@ class AnthropicClient:
             data = {
                 "model": self.model_name,
                 "messages": [{"role": "user", "content": prompt}],
-                "max_tokens": 1000
+                "max_tokens": 1000,
+                "stream": False
             }
             
             log_message(f"Sending request to Anthropic API with model {self.model_name}")
             
+            # Regular response (disable streaming for now to fix crashes)
             response = requests.post(
                 "https://api.anthropic.com/v1/messages",
                 headers=headers,
@@ -298,6 +307,7 @@ class AnthropicClient:
                 error_msg = f"Anthropic API Error: {response.status_code} - {response.text}"
                 log_message(error_msg, True)
                 return error_msg
+                
         except Exception as e:
             error_msg = f"Anthropic API Exception: {str(e)}"
             log_message(error_msg, True)
@@ -311,7 +321,7 @@ class GoogleClient:
         if not self.api_key:
             raise ValueError("Google API key not found in environment variables")
     
-    def generate_response(self, prompt):
+    def generate_response(self, prompt, on_chunk=None):
         try:
             # This is a simplified version - actual implementation depends on the Gemini API
             log_message(f"Google API integration not fully implemented, using model: {self.model_name}")
@@ -356,6 +366,201 @@ class MessageEditDialog(wx.Dialog):
     def GetMessage(self):
         return self.text_ctrl.GetValue()
 
+# Dialog for managing document priorities
+class DocumentPriorityDialog(wx.Dialog):
+    def __init__(self, parent, documents, doc_priorities):
+        super(DocumentPriorityDialog, self).__init__(parent, title="Document Priorities", size=(500, 400))
+        
+        self.documents = documents
+        self.doc_priorities = doc_priorities.copy()
+        
+        # Create a panel and main sizer
+        panel = wx.Panel(self)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Add instructions
+        instructions = wx.StaticText(panel, label="Set priority for each document:")
+        main_sizer.Add(instructions, 0, wx.ALL, 10)
+        
+        # Create a scrolled panel for the documents
+        self.scroll_panel = scrolled.ScrolledPanel(panel)
+        self.scroll_panel.SetAutoLayout(True)
+        self.scroll_panel.SetupScrolling()
+        
+        scroll_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Priority choices
+        self.priority_levels = ["Low", "Medium", "High"]
+        self.priority_controls = {}
+        
+        # Add controls for each document
+        for doc in self.documents:
+            doc_sizer = wx.BoxSizer(wx.HORIZONTAL)
+            
+            # Document name
+            doc_label = wx.StaticText(self.scroll_panel, label=doc)
+            doc_sizer.Add(doc_label, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 10)
+            
+            # Priority dropdown
+            priority_choice = wx.Choice(self.scroll_panel, choices=self.priority_levels)
+            current_priority = self.doc_priorities.get(doc, "Medium")
+            priority_choice.SetStringSelection(current_priority)
+            doc_sizer.Add(priority_choice, 0)
+            
+            # Store the control reference
+            self.priority_controls[doc] = priority_choice
+            
+            scroll_sizer.Add(doc_sizer, 0, wx.EXPAND | wx.ALL, 5)
+        
+        self.scroll_panel.SetSizer(scroll_sizer)
+        main_sizer.Add(self.scroll_panel, 1, wx.EXPAND | wx.ALL, 10)
+        
+        # Add OK and Cancel buttons
+        button_sizer = wx.StdDialogButtonSizer()
+        ok_button = wx.Button(panel, wx.ID_OK)
+        ok_button.SetDefault()
+        button_sizer.AddButton(ok_button)
+        cancel_button = wx.Button(panel, wx.ID_CANCEL)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
+        
+        main_sizer.Add(button_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        
+        panel.SetSizer(main_sizer)
+        self.Centre()
+    
+    def get_priorities(self):
+        priorities = {}
+        for doc, control in self.priority_controls.items():
+            priorities[doc] = control.GetStringSelection()
+        return priorities
+
+# Dialog for saving/loading prompts
+class PromptLibraryDialog(wx.Dialog):
+    def __init__(self, parent, mode="load", current_prompt=""):
+        title = "Load Prompt" if mode == "load" else "Save Prompt"
+        super(PromptLibraryDialog, self).__init__(parent, title=title, size=(500, 400))
+        
+        self.mode = mode
+        self.current_prompt = current_prompt
+        self.prompts_dir = os.path.join(APP_PATH, "Prompts")
+        self.selected_prompt = None
+        
+        # Create a panel and main sizer
+        panel = wx.Panel(self)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        
+        # Add appropriate controls based on mode
+        if mode == "load":
+            # Prompt list for loading
+            list_label = wx.StaticText(panel, label="Select a prompt to load:")
+            main_sizer.Add(list_label, 0, wx.ALL, 10)
+            
+            self.prompt_list = wx.ListBox(panel, style=wx.LB_SINGLE)
+            self.load_saved_prompts()
+            main_sizer.Add(self.prompt_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+            
+            # Delete button for removing prompts
+            delete_btn = wx.Button(panel, label="Delete Selected Prompt")
+            delete_btn.Bind(wx.EVT_BUTTON, self.on_delete_prompt)
+            main_sizer.Add(delete_btn, 0, wx.ALL, 10)
+            
+        else:  # Save mode
+            # Prompt name field
+            name_label = wx.StaticText(panel, label="Prompt Name:")
+            main_sizer.Add(name_label, 0, wx.ALL, 10)
+            
+            self.name_field = wx.TextCtrl(panel)
+            main_sizer.Add(self.name_field, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+            
+            # Preview of prompt to save
+            preview_label = wx.StaticText(panel, label="Prompt Preview:")
+            main_sizer.Add(preview_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+            
+            preview_text = wx.TextCtrl(panel, value=current_prompt[:200] + ("..." if len(current_prompt) > 200 else ""), 
+                                     style=wx.TE_MULTILINE | wx.TE_READONLY)
+            preview_text.SetMinSize((400, 100))
+            main_sizer.Add(preview_text, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        
+        # Add OK and Cancel buttons
+        button_sizer = wx.StdDialogButtonSizer()
+        ok_button = wx.Button(panel, wx.ID_OK)
+        ok_button.SetDefault()
+        button_sizer.AddButton(ok_button)
+        cancel_button = wx.Button(panel, wx.ID_CANCEL)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
+        
+        main_sizer.Add(button_sizer, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        
+        panel.SetSizer(main_sizer)
+        self.Centre()
+    
+    def load_saved_prompts(self):
+        # Clear the list
+        self.prompt_list.Clear()
+        
+        # Get all JSON files from the Prompts directory
+        if os.path.exists(self.prompts_dir):
+            prompt_files = [f for f in os.listdir(self.prompts_dir) 
+                           if os.path.isfile(os.path.join(self.prompts_dir, f)) 
+                           and f.lower().endswith('.json')]
+            
+            # Add each file to the list (without .json extension)
+            for prompt_file in prompt_files:
+                prompt_name = os.path.splitext(prompt_file)[0]
+                self.prompt_list.Append(prompt_name)
+    
+    def on_delete_prompt(self, event):
+        selected_idx = self.prompt_list.GetSelection()
+        if selected_idx != wx.NOT_FOUND:
+            prompt_name = self.prompt_list.GetString(selected_idx)
+            
+            # Confirm deletion
+            dialog = wx.MessageDialog(self, 
+                                     f"Are you sure you want to delete the prompt '{prompt_name}'?",
+                                     "Confirm Deletion", 
+                                     wx.YES_NO | wx.ICON_QUESTION)
+            
+            if dialog.ShowModal() == wx.ID_YES:
+                # Delete the prompt file
+                file_path = os.path.join(self.prompts_dir, f"{prompt_name}.json")
+                try:
+                    os.remove(file_path)
+                    # Update the list
+                    self.prompt_list.Delete(selected_idx)
+                    log_message(f"Deleted prompt: {prompt_name}")
+                except Exception as e:
+                    log_message(f"Error deleting prompt: {str(e)}", True)
+                    wx.MessageBox(f"Error deleting prompt: {str(e)}", "Error", wx.OK | wx.ICON_ERROR)
+            
+            dialog.Destroy()
+    
+    def get_prompt_content(self):
+        if self.mode == "load":
+            selected_idx = self.prompt_list.GetSelection()
+            if selected_idx != wx.NOT_FOUND:
+                prompt_name = self.prompt_list.GetString(selected_idx)
+                self.selected_prompt = prompt_name
+                
+                file_path = os.path.join(self.prompts_dir, f"{prompt_name}.json")
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        prompt_data = json.load(f)
+                        return prompt_data.get("content", "")
+                except Exception as e:
+                    log_message(f"Error loading prompt: {str(e)}", True)
+                    return ""
+            return ""
+        else:
+            return self.current_prompt
+    
+    def get_prompt_name(self):
+        if self.mode == "load":
+            return self.selected_prompt
+        else:
+            return self.name_field.GetValue()
+
 # Main application class
 class ResearchAssistantApp(wx.Frame):
     def __init__(self):
@@ -372,6 +577,8 @@ class ResearchAssistantApp(wx.Frame):
         self.conversation_history = []  # Store conversation history
         self.doc_checkboxes = []  # Track document checkboxes
         self.message_positions = []  # Store positions of messages in the chat display
+        self.doc_priorities = {}  # Store document priorities (new)
+        self.current_streaming_response = ""  # Store current streaming response (new)
     
     # Set up the UI
         self.setup_ui()
@@ -379,8 +586,9 @@ class ResearchAssistantApp(wx.Frame):
     # Update document list
         self.update_document_list()
     
-    # Set up event handler for response updates
+    # Set up event handlers
         self.Bind(EVT_RESPONSE, self.on_response_event)
+        self.Bind(EVT_STREAM, self.on_stream_event)  # New event handler for streaming
     
     # Create status bar
         self.CreateStatusBar()
@@ -418,6 +626,11 @@ class ResearchAssistantApp(wx.Frame):
             upload_btn = wx.Button(left_panel, label="Upload Document")
             upload_btn.Bind(wx.EVT_BUTTON, self.on_upload_document)
             left_sizer.Add(upload_btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+            
+            # Set document priorities button (new)
+            priority_btn = wx.Button(left_panel, label="Set Document Priorities")
+            priority_btn.Bind(wx.EVT_BUTTON, self.on_set_priorities)
+            left_sizer.Add(priority_btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
             
             # Document list in a scrolled panel
             self.doc_panel = scrolled.ScrolledPanel(left_panel, style=wx.SUNKEN_BORDER)
@@ -485,6 +698,21 @@ class ResearchAssistantApp(wx.Frame):
             chat_management_panel.SetSizer(chat_management_sizer)
             right_sizer.Add(chat_management_panel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
             
+            # Prompt library buttons (new)
+            prompt_panel = wx.Panel(right_panel)
+            prompt_sizer = wx.BoxSizer(wx.HORIZONTAL)
+            
+            save_prompt_btn = wx.Button(prompt_panel, label="Save Prompt")
+            save_prompt_btn.Bind(wx.EVT_BUTTON, self.on_save_prompt)
+            prompt_sizer.Add(save_prompt_btn, 1, wx.RIGHT, 5)
+            
+            load_prompt_btn = wx.Button(prompt_panel, label="Load Prompt")
+            load_prompt_btn.Bind(wx.EVT_BUTTON, self.on_load_prompt)
+            prompt_sizer.Add(load_prompt_btn, 1)
+            
+            prompt_panel.SetSizer(prompt_sizer)
+            right_sizer.Add(prompt_panel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+            
             # Chat display
             self.chat_display = wx.TextCtrl(right_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.BORDER_SUNKEN)
             right_sizer.Add(self.chat_display, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -536,7 +764,24 @@ class ResearchAssistantApp(wx.Frame):
             for doc in doc_files:
                 checkbox = wx.CheckBox(self.doc_panel, label=doc)
                 checkbox.Bind(wx.EVT_CHECKBOX, self.on_document_selection)
-                self.doc_sizer.Add(checkbox, 0, wx.EXPAND | wx.ALL, 5)
+                
+                # Add priority indicator if priority is set
+                doc_sizer = wx.BoxSizer(wx.HORIZONTAL)
+                doc_sizer.Add(checkbox, 1, wx.EXPAND)
+                
+                if doc in self.doc_priorities:
+                    priority = self.doc_priorities[doc]
+                    priority_label = wx.StaticText(self.doc_panel, label=f"[{priority}]")
+                    
+                    # Set color based on priority
+                    if priority == "High":
+                        priority_label.SetForegroundColour(wx.Colour(255, 0, 0))  # Red
+                    elif priority == "Medium":
+                        priority_label.SetForegroundColour(wx.Colour(0, 0, 255))  # Blue
+                    
+                    doc_sizer.Add(priority_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 5)
+                
+                self.doc_sizer.Add(doc_sizer, 0, wx.EXPAND | wx.ALL, 5)
                 self.doc_checkboxes.append(checkbox)
             
             # Update panel layout
@@ -584,6 +829,105 @@ class ResearchAssistantApp(wx.Frame):
             self.SetStatusText(error_msg)
             wx.MessageBox(error_msg, "Error", wx.OK | wx.ICON_ERROR)
     
+    def on_set_priorities(self, event):
+        try:
+            # Get all document names
+            doc_path = os.path.join(APP_PATH, "Documents")
+            doc_files = []
+            
+            if os.path.exists(doc_path):
+                doc_files = [f for f in os.listdir(doc_path) 
+                            if os.path.isfile(os.path.join(doc_path, f)) 
+                            and f.lower().endswith(('.pdf', '.docx', '.txt', '.md'))]
+            
+            if not doc_files:
+                wx.MessageBox("No documents available to prioritize.", "Info", wx.OK | wx.ICON_INFORMATION)
+                return
+            
+            # Show the priority dialog
+            dialog = DocumentPriorityDialog(self, doc_files, self.doc_priorities)
+            if dialog.ShowModal() == wx.ID_OK:
+                # Update priorities
+                self.doc_priorities = dialog.get_priorities()
+                log_message(f"Updated document priorities: {self.doc_priorities}")
+                
+                # Update document list to show priorities
+                self.update_document_list()
+            
+            dialog.Destroy()
+        except Exception as e:
+            error_msg = f"Error setting document priorities: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+            wx.MessageBox(error_msg, "Error", wx.OK | wx.ICON_ERROR)
+    
+    def on_save_prompt(self, event):
+        try:
+            # Get current message from input
+            current_prompt = self.user_input.GetValue().strip()
+            
+            if not current_prompt:
+                wx.MessageBox("Please enter a prompt to save first.", "Error", wx.OK | wx.ICON_ERROR)
+                return
+            
+            # Show save prompt dialog
+            dialog = PromptLibraryDialog(self, mode="save", current_prompt=current_prompt)
+            if dialog.ShowModal() == wx.ID_OK:
+                prompt_name = dialog.get_prompt_name()
+                
+                if not prompt_name:
+                    wx.MessageBox("Please enter a name for the prompt.", "Error", wx.OK | wx.ICON_ERROR)
+                    return
+                
+                # Save prompt to file
+                os.makedirs(prompts_dir, exist_ok=True)
+                file_path = os.path.join(prompts_dir, f"{prompt_name}.json")
+                
+                prompt_data = {
+                    "name": prompt_name,
+                    "content": current_prompt,
+                    "created_at": wx.DateTime.Now().Format("%Y-%m-%d %H:%M:%S")
+                }
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(prompt_data, f, indent=2)
+                
+                log_message(f"Saved prompt: {prompt_name}")
+                self.SetStatusText(f"Prompt saved as: {prompt_name}")
+            
+            dialog.Destroy()
+        except Exception as e:
+            error_msg = f"Error saving prompt: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+            wx.MessageBox(error_msg, "Error", wx.OK | wx.ICON_ERROR)
+    
+    def on_load_prompt(self, event):
+        try:
+            # Show load prompt dialog
+            dialog = PromptLibraryDialog(self, mode="load")
+            if dialog.ShowModal() == wx.ID_OK:
+                prompt_content = dialog.get_prompt_content()
+                prompt_name = dialog.get_prompt_name()
+                
+                if prompt_content:
+                    # Set loaded prompt in input field
+                    self.user_input.SetValue(prompt_content)
+                    log_message(f"Loaded prompt: {prompt_name}")
+                    self.SetStatusText(f"Loaded prompt: {prompt_name}")
+                else:
+                    log_message("No prompt selected or error loading prompt")
+            
+            dialog.Destroy()
+        except Exception as e:
+            error_msg = f"Error loading prompt: {str(e)}"
+            log_message(error_msg, True)
+            log_message(traceback.format_exc(), True)
+            self.SetStatusText(error_msg)
+            wx.MessageBox(error_msg, "Error", wx.OK | wx.ICON_ERROR)
+    
     def on_document_selection(self, event):
         try:
             self.selected_docs = []
@@ -608,10 +952,17 @@ class ResearchAssistantApp(wx.Frame):
                     log_message(f"Loading document: {file_path}")
                     self.documents[doc_name] = read_file(file_path)
             
-            # Prepare document context for the prompt
+            # Prepare document context for the prompt, giving priority to high priority documents
             doc_context = ""
-            for doc_name in self.selected_docs:
-                doc_context += f"\n--- Document: {doc_name} ---\n"
+            
+            # Sort documents by priority (High -> Medium -> Low or not set)
+            priority_order = {"High": 0, "Medium": 1, "Low": 2}
+            sorted_docs = sorted(self.selected_docs, 
+                                key=lambda d: priority_order.get(self.doc_priorities.get(d, "Medium"), 1))
+            
+            for doc_name in sorted_docs:
+                priority = self.doc_priorities.get(doc_name, "Medium")
+                doc_context += f"\n--- Document: {doc_name} [Priority: {priority}] ---\n"
                 doc_context += self.documents[doc_name]
                 doc_context += "\n"
             
@@ -677,49 +1028,71 @@ class ResearchAssistantApp(wx.Frame):
     
     def append_to_chat(self, message, sender):
         try:
-        # Determine insert position (end of text)
+            # Determine insert position (end of text)
             end_pos = self.chat_display.GetLastPosition()
-        
-        # Insert sender with formatting
+            
+            # Insert separator between Q&A if this is an assistant response (new)
+            if sender == "Assistant" and end_pos > 0:
+                self.chat_display.SetInsertionPoint(end_pos)
+                self.chat_display.WriteText("------------------------\n")  # Horizontal separator
+            
+            # Insert sender with formatting
+            end_pos = self.chat_display.GetLastPosition()
             self.chat_display.SetInsertionPoint(end_pos)
-            self.chat_display.WriteText(f"{sender}: ")
-        
-        # Style the sender text
+            
+            # Format just the "You:" or "Assistant:" prefix in bold, not the entire message (new)
+            prefix = f"{sender}: "
+            self.chat_display.WriteText(prefix)
+            
+            # Style the sender text
             last_pos = self.chat_display.GetLastPosition()
             self.chat_display.SetStyle(end_pos, last_pos, 
                                     wx.TextAttr(wx.BLACK, font=wx.Font(wx.FontInfo(10).Bold())))
-        
-        # Add message
+            
+            # Add message with regular formatting
             self.chat_display.WriteText(f"{message}\n\n")
-        
-        # Scroll to end
+            
+            # Scroll to end
             self.chat_display.ShowPosition(self.chat_display.GetLastPosition())
         except Exception as e:
             log_message(f"Error appending to chat: {str(e)}", True)
     
-    
+    def append_streaming_chunk(self, chunk):
+        try:
+            # Get current end position
+            end_pos = self.chat_display.GetLastPosition()
+            
+            # Insert the chunk
+            self.chat_display.SetInsertionPoint(end_pos)
+            self.chat_display.WriteText(chunk)
+            
+            # Force UI update to show changes immediately (new)
+            self.chat_display.ShowPosition(self.chat_display.GetLastPosition())
+            wx.Yield()
+        except Exception as e:
+            log_message(f"Error appending streaming chunk: {str(e)}", True)
     
     def on_clear_all_chat(self, event):
         try:
-        # Confirm with user
+            # Confirm with user
             dialog = wx.MessageDialog(self, 
                                     "Are you sure you want to clear the entire chat history?",
                                     "Confirm Clear All", 
                                     wx.YES_NO | wx.ICON_QUESTION)
-        
+            
             if dialog.ShowModal() == wx.ID_YES:
-            # Clear conversation history
+                # Clear conversation history
                 self.conversation_history = []
-            
-            # Clear chat display
+                
+                # Clear chat display
                 self.chat_display.Clear()
-            
-            # Clear message positions
+                
+                # Clear message positions
                 self.message_positions = []
-            
+                
                 log_message("Chat history cleared")
                 self.SetStatusText("Chat history cleared")
-        
+            
             dialog.Destroy()
         except Exception as e:
             error_msg = f"Error clearing chat: {str(e)}"
@@ -730,17 +1103,17 @@ class ResearchAssistantApp(wx.Frame):
     def on_clear_last_exchange(self, event):
         try:
             if len(self.conversation_history) >= 2:
-            # Remove last assistant and user messages (one exchange)
+                # Remove last assistant and user messages (one exchange)
                 self.conversation_history = self.conversation_history[:-2]
-            
-            # Redraw chat display
+                
+                # Redraw chat display
                 self.chat_display.Clear()
                 self.message_positions = []
-            
+                
                 for msg in self.conversation_history:
                     sender = "You" if msg["role"] == "user" else "Assistant"
                     self.append_to_chat(msg["content"], sender)
-            
+                
                 log_message("Last exchange cleared")
                 self.SetStatusText("Last exchange cleared")
             else:
@@ -753,58 +1126,58 @@ class ResearchAssistantApp(wx.Frame):
 
     def on_edit_message(self, event):
         try:
-        # First, store the current position of each message to enable selection
+            # First, store the current position of each message to enable selection
             if not self.message_positions:
-            # If we haven't tracked positions yet, we need to rebuild this list
+                # If we haven't tracked positions yet, we need to rebuild this list
                 self.rebuild_message_positions()
-        
-        # Create a dialog to select which message to edit
+            
+            # Create a dialog to select which message to edit
             messages = []
             for i, msg in enumerate(self.conversation_history):
                 role = "You" if msg["role"] == "user" else "Assistant"
-            # Truncate message for display in selection dialog
+                # Truncate message for display in selection dialog
                 content = msg["content"]
                 if len(content) > 50:
                     content = content[:47] + "..."
                 messages.append(f"{i+1}. {role}: {content}")
-        
-        # Show message selection dialog
+            
+            # Show message selection dialog
             dialog = wx.SingleChoiceDialog(
                 self, "Select a message to edit:", "Edit Message", messages)
-        
+            
             if dialog.ShowModal() == wx.ID_OK:
                 selected_index = dialog.GetSelection()
                 dialog.Destroy()
-            
-            # Now show edit dialog for the selected message
+                
+                # Now show edit dialog for the selected message
                 edit_dialog = MessageEditDialog(
                     self, self.conversation_history[selected_index]["content"])
-            
+                
                 if edit_dialog.ShowModal() == wx.ID_OK:
-                # Update the message with edited content
+                    # Update the message with edited content
                     edited_content = edit_dialog.GetMessage()
                     self.conversation_history[selected_index]["content"] = edited_content
-                
-                # Redraw chat display up to the edited message
+                    
+                    # Redraw chat display up to the edited message
                     self.chat_display.Clear()
                     self.message_positions = []
-                
-                # Display all messages up to and including the edited one
+                    
+                    # Display all messages up to and including the edited one
                     for i, msg in enumerate(self.conversation_history[:selected_index+1]):
                         sender = "You" if msg["role"] == "user" else "Assistant"
                         self.append_to_chat(msg["content"], sender)
-                
-                # Remove all messages after the edited one
+                    
+                    # Remove all messages after the edited one
                     self.conversation_history = self.conversation_history[:selected_index+1]
-                
-                # Disable input during processing
+                    
+                    # Disable input during processing
                     self.user_input.Disable()
                     self.SetStatusText("Processing edited message...")
-                
-                # Process the edited message - use the last message in the conversation history
-                # which is the edited message we just updated
+                    
+                    # Process the edited message - use the last message in the conversation history
+                    # which is the edited message we just updated
                     threading.Thread(target=self.process_message, args=(self.conversation_history[-1]["content"],), daemon=True).start()
-            
+                
                 edit_dialog.Destroy()
             else:
                 dialog.Destroy()
@@ -813,79 +1186,76 @@ class ResearchAssistantApp(wx.Frame):
             log_message(error_msg, True)
             log_message(traceback.format_exc(), True)
             self.SetStatusText(error_msg)
-        
-        
+    
     def rebuild_message_positions(self):
         try:
             self.message_positions = []
             current_position = 0
-        
-        # Get the text of the chat display
+            
+            # Get the text of the chat display
             text = self.chat_display.GetValue()
             lines = text.split('\n')
-        
-        # Rebuild positions based on message markers in text
+            
+            # Rebuild positions based on message markers in text
             for i, line in enumerate(lines):
-            # Check if this line starts a message (contains "You: " or "Assistant: ")
+                # Check if this line starts a message (contains "You: " or "Assistant: ")
                 if line.startswith("You: ") or line.startswith("Assistant: "):
-                # Calculate position in characters
+                    # Calculate position in characters
                     position = sum(len(lines[j]) + 1 for j in range(i))
                     self.message_positions.append(position)
-        
+            
             log_message(f"Rebuilt message positions: {len(self.message_positions)} found")
         except Exception as e:
             log_message(f"Error rebuilding message positions: {str(e)}", True)
             log_message(traceback.format_exc(), True)
 
-
-
     def edit_conversation_history(self, event):
         try:
-        # Create a dialog to edit conversation history
+            # Create a dialog to edit conversation history
             dialog = ConversationHistoryDialog(self, self.conversation_history)
             if dialog.ShowModal() == wx.ID_OK:
-            # Update conversation history
+                # Update conversation history
                 self.conversation_history = dialog.get_updated_history()
-            
-            # Update chat display
+                
+                # Update chat display
                 self.chat_display.Clear()
                 for msg in self.conversation_history:
                     sender = "You" if msg["role"] == "user" else "Assistant"
                     self.append_to_chat(msg["content"], sender)
-            
+                
                 log_message("Conversation history updated")
                 self.SetStatusText("Conversation history updated")
-        
+            
             dialog.Destroy()
         except Exception as e:
             error_msg = f"Error editing conversation history: {str(e)}"
             log_message(error_msg, True)
             log_message(traceback.format_exc(), True)
             self.SetStatusText(error_msg)
-        
+    
     def on_send_message(self, event):
         try:
             user_message = self.user_input.GetValue().strip()
-        
+            
             if not user_message:
                 return
-        
+            
             log_message(f"Sending user message: {user_message[:50]}...")
-        
-        # Clear input
+            
+            # Clear input
             self.user_input.Clear()
-        
-        # Add to chat display
+            
+            # Add to chat display
             self.append_to_chat(user_message, "You")
-        
-        # Add to conversation history
+            
+            # Add to conversation history
             self.conversation_history.append({"role": "user", "content": user_message})
-        
-        # Disable input during processing
+            
+            # Disable input during processing
             self.user_input.Disable()
             self.SetStatusText("Processing...")
-        
-        # Use threading to keep UI responsive
+            
+            # Use threading to keep UI responsive
             threading.Thread(target=self.process_message, args=(user_message,), daemon=True).start()
         except Exception as e:
             error_msg = f"Error sending message: {str(e)}"
@@ -894,47 +1264,56 @@ class ResearchAssistantApp(wx.Frame):
             self.SetStatusText(error_msg)
             self.user_input.Enable()
 
+    def on_stream_event(self, event):
+        # Append the chunk to the chat display
+        self.append_streaming_chunk(event.chunk)
+        # Add to the current streaming response
+        self.current_streaming_response += event.chunk
+
     def process_message(self, user_message):
         try:
-        # Load selected documents
+            # Load selected documents
             doc_context = self.load_selected_documents()
-        
-        # Create conversation history text
+            
+            # Create conversation history text
             history_text = ""
             for msg in self.conversation_history[:-1]:  # Skip the last user message as we'll add it separately
                 sender = "User" if msg["role"] == "user" else "Assistant"
                 history_text += f"{sender}: {msg['content']}\n\n"
-        
-        # Get system prompt from config
+            
+            # Get system prompt from config
             system_prompt = self.config.get("system_prompt", "You are a helpful AI research assistant.")
-        
-        # Create the full prompt
+            
+            # Create the full prompt
             prompt = f"""
-    {system_prompt}
+{system_prompt}
 
-    Document Context:
-    {doc_context}
+Document Context:
+{doc_context}
 
-    Conversation History:
-    {history_text}
+Conversation History:
+{history_text}
 
-    Current Question:
-    {user_message}
-    """
-        
-        # Get LLM client
+Current Question:
+{user_message}
+"""
+            
+            # Get LLM client
             client = self.get_llm_client()
-        
+            
             if client:
+                # Get response (no streaming for now to fix the crash)
                 response = client.generate_response(prompt)
+                
+                # Post event to add response to UI
+                wx.PostEvent(self, ResponseEvent(response=response))
+                
+                # Add to conversation history
+                self.conversation_history.append({"role": "assistant", "content": response})
             else:
-                response = "Could not initialize LLM client. Please check your API keys and configuration."
-        
-        # Add to conversation history
-            self.conversation_history.append({"role": "assistant", "content": response})
-        
-        # Update UI in the main thread
-            wx.PostEvent(self, ResponseEvent(response=response))
+                error_response = "Could not initialize LLM client. Please check your API keys and configuration."
+                wx.PostEvent(self, ResponseEvent(response=error_response))
+                self.conversation_history.append({"role": "assistant", "content": error_response})
         except Exception as e:
             error_message = f"Error processing message: {str(e)}"
             log_message(error_message, True)
@@ -943,10 +1322,10 @@ class ResearchAssistantApp(wx.Frame):
 
     def on_response_event(self, event):
         try:
-        # Add response to chat
+            # Add response to chat
             self.append_to_chat(event.response, "Assistant")
-        
-        # Enable input
+            
+            # Enable input
             self.user_input.Enable()
             self.SetStatusText("Ready")
         except Exception as e:
@@ -955,7 +1334,6 @@ class ResearchAssistantApp(wx.Frame):
             self.user_input.Enable()
 
 
-# Dialog for editing conversation history
 # Dialog for editing conversation history
 class ConversationHistoryDialog(wx.Dialog):
     def __init__(self, parent, conversation_history):

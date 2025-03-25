@@ -64,7 +64,7 @@ if not os.path.exists("config.json"):
             "anthropic": {
                 "name": "Anthropic Claude",
                 "api_key_env": "ANTHROPIC_API_KEY",
-                "model_name": "claude-3-opus-20240229"
+                "model_name": "claude-3-7-sonnet-20250219"
             },
             "gemini": {
                 "name": "Google Gemini",
